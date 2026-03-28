@@ -10,105 +10,78 @@
 #include <sstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace seneca {
 
-    TvShow* TvShow::createItem(const std::string& str) {
+    TvShow* TvShow::createItem(const string& str) {
 
         if (str.size() == 0 || str[0] == '#')
             throw "Not a valid show.";
 
-        std::stringstream ss(str);
+        stringstream ss(str);
 
-        std::string id;
-        std::string title;
-        std::string yearStr;
-        std::string summary;
+        string id, title, yearStr, summary;
 
-        std::getline(ss, id, ',');
-        std::getline(ss, title, ',');
-        std::getline(ss, yearStr, ',');
-        std::getline(ss, summary);
+        getline(ss, id, ',');
+        getline(ss, title, ',');
+        getline(ss, yearStr, ',');
+        getline(ss, summary);
 
         MediaItem::trim(id);
         MediaItem::trim(title);
         MediaItem::trim(yearStr);
         MediaItem::trim(summary);
 
-        unsigned short year = (unsigned short)std::stoi(yearStr);
-
-        return new TvShow(id, title, summary, year);
+        return new TvShow(id, title, summary, stoi(yearStr));
     }
 
-    void TvShow::display(std::ostream& out) const {
+    void TvShow::display(ostream& out) const {
 
         if (g_settings.m_tableView) {
 
             out << "S | ";
-
-            out << std::left << std::setfill('.');
-            out << std::setw(50) << getTitle() << " | ";
-
-            out << std::right << std::setfill(' ');
-            out << std::setw(2) << m_episodes.size() << " | ";
-            out << std::setw(4) << getYear() << " | ";
-
-            out << std::left;
-
-            std::string summary = getSummary();
+            out << left << setfill('.');
+            out << setw(50) << getTitle() << " | ";
+            out << right << setfill(' ');
+            out << setw(2) << m_episodes.size() << " | ";
+            out << setw(4) << getYear() << " | ";
+            out << left;
 
             if (g_settings.m_maxSummaryWidth > -1) {
-                if (summary.length() <= (size_t)g_settings.m_maxSummaryWidth)
-                    out << summary;
+
+                if ((short)getSummary().size() <= g_settings.m_maxSummaryWidth)
+                    out << getSummary();
                 else
-                    out << summary.substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
+                    out << getSummary().substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
             }
             else {
-                out << summary;
+                out << getSummary();
             }
 
-            out << std::endl;
+            out << endl;
         }
         else {
 
-            out << getTitle() << " [" << getYear() << "]\n";
-
-            out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
-
-            std::string summary = getSummary();
             size_t pos = 0;
 
-            while (pos < summary.length()) {
-                out << "    " << summary.substr(pos, g_settings.m_maxSummaryWidth) << '\n';
+            out << getTitle() << " [" << getYear() << "]\n";
+
+            out << setw(getTitle().size() + 7) << setfill('-') << "" << '\n';
+
+            while (pos < getSummary().size()) {
+                out << "    " << getSummary().substr(pos, g_settings.m_maxSummaryWidth) << '\n';
                 pos += g_settings.m_maxSummaryWidth;
             }
 
             for (size_t i = 0; i < m_episodes.size(); i++) {
 
-                out << std::right << std::setfill('0');
-
-                out << "    S"
-                    << std::setw(2) << m_episodes[i].m_season
-                    << "E"
-                    << std::setw(2) << m_episodes[i].m_numberInSeason;
-
-                out << std::setfill(' ');
-
-                // ✅ FIXED (NO EXTRA QUOTES)
-                out << " " << m_episodes[i].m_title << "\n";
-
-                size_t pos2 = 0;
-
-                while (pos2 < m_episodes[i].m_summary.length()) {
-                    out << "            "
-                        << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth - 8)
-                        << '\n';
-
-                    pos2 += g_settings.m_maxSummaryWidth - 8;
-                }
+                out << "    S" << setw(2) << setfill('0') << m_episodes[i].m_season
+                    << "E" << setw(2) << m_episodes[i].m_numberInSeason
+                    << " " << m_episodes[i].m_title << '\n';
             }
 
-            out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
-            out << std::setfill(' ');
+            out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
         }
     }
 
