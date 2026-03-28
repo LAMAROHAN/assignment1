@@ -85,12 +85,24 @@ namespace seneca {
 
             for (size_t i = 0; i < m_episodes.size(); i++) {
 
+                out << std::right << std::setfill('0');
+
                 out << "    S"
-                    << std::setw(2) << std::setfill('0') << m_episodes[i].m_season
+                    << std::setw(2) << m_episodes[i].m_season
                     << "E"
-                    << std::setw(2) << std::setfill('0') << m_episodes[i].m_numberInSeason
+                    << std::setw(2) << m_episodes[i].m_numberInSeason
                     << std::setfill(' ')
                     << " \"" << m_episodes[i].m_title << "\"\n";
+
+                size_t pos2 = 0;
+
+                while (pos2 < m_episodes[i].m_summary.length()) {
+                    out << "            "
+                        << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth - 8)
+                        << '\n';
+
+                    pos2 += g_settings.m_maxSummaryWidth - 8;
+                }
             }
 
             out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
