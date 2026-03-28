@@ -5,6 +5,7 @@
     I declare that this submission is the result of my own work and I only copied the code that my professor provided to complete my assignments. This submitted piece of work has not been shared with any other student or 3rd party content provider.
 */
 
+
 #ifndef SENECA_TVSHOW_H
 #define SENECA_TVSHOW_H
 
@@ -27,10 +28,12 @@ namespace seneca {
     };
 
     class TvShow : public MediaItem {
+
         std::string m_id;
         std::vector<TvEpisode> m_episodes;
 
     public:
+
         TvShow(const std::string& id,
             const std::string& title,
             const std::string& summary,
@@ -49,36 +52,26 @@ namespace seneca {
             if (str.size() == 0 || str[0] == '#')
                 throw "Not a valid episode.";
 
-            std::vector<std::string> tokens;
+            std::string temp = str;
+            std::string tokens[8];
 
-            size_t start = 0;
-            size_t end;
+            size_t pos = 0;
 
-            while (true) {
-                end = str.find(',', start);
-
-                if (end == std::string::npos)
-                    break;
-
-                std::string temp = str.substr(start, end - start);
-                MediaItem::trim(temp);
-                tokens.push_back(temp);
-
-                start = end + 1;
+            for (int i = 0; i < 7; i++) {
+                pos = temp.find(',');
+                tokens[i] = temp.substr(0, pos);
+                MediaItem::trim(tokens[i]);
+                temp.erase(0, pos + 1);
             }
 
-            std::string temp = str.substr(start);
-            MediaItem::trim(temp);
-            tokens.push_back(temp);
-
-            if (tokens.size() < 8)
-                throw "Not a valid episode.";
+            tokens[7] = temp;
+            MediaItem::trim(tokens[7]);
 
             TvEpisode ep;
 
             ep.m_numberOverall = std::stoi(tokens[1]);
 
-            if (tokens[2].empty())
+            if (tokens[2].size() == 0)
                 ep.m_season = 1;
             else
                 ep.m_season = std::stoi(tokens[2]);
@@ -90,17 +83,19 @@ namespace seneca {
             ep.m_summary = tokens[7];
 
             for (size_t i = 0; i < col.size(); i++) {
+
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
 
                 if (show != nullptr && show->m_id == tokens[0]) {
-                    TvEpisode copy = ep;
-                    copy.m_show = show;
-                    show->m_episodes.push_back(copy);
+
+                    ep.m_show = show;
+                    show->m_episodes.push_back(ep);
                 }
             }
         }
 
         double getEpisodeAverageLength() const {
+
             if (m_episodes.size() == 0)
                 return 0;
 
@@ -114,9 +109,11 @@ namespace seneca {
         }
 
         std::list<std::string> getLongEpisodes() const {
+
             std::list<std::string> result;
 
             for (size_t i = 0; i < m_episodes.size(); i++) {
+
                 if (m_episodes[i].m_length >= 3600) {
                     result.push_back(m_episodes[i].m_title);
                 }
