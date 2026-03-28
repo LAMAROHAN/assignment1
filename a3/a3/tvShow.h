@@ -90,9 +90,7 @@ namespace seneca {
             ep.m_summary = summary;
 
             for (size_t i = 0; i < col.size(); i++) {
-
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
-
                 if (show != nullptr && show->m_id == id) {
                     ep.m_show = show;
                     show->m_episodes.push_back(ep);
@@ -119,7 +117,6 @@ namespace seneca {
             std::list<std::string> result;
 
             for (size_t i = 0; i < m_episodes.size(); i++) {
-
                 if (m_episodes[i].m_length >= 3600) {
                     result.push_back(m_episodes[i].m_title);
                 }
