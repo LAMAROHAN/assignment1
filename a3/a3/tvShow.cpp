@@ -5,6 +5,7 @@
     I declare that this submission is the result of my own work and I only copied the code that my professor provided to complete my assignments. This submitted piece of work has not been shared with any other student or 3rd party content provider.
 */
 #include "tvShow.h"
+#include "collection.h"
 #include "settings.h"
 #include <sstream>
 #include <iomanip>
@@ -15,7 +16,8 @@ namespace seneca {
 
     TvShow::TvShow(const string& id, const string& title,
                    const string& summary, unsigned short year)
-        : MediaItem(id, title, summary, year) {
+        : MediaItem(title, summary, year) {
+        m_id = id;
     }
 
     TvShow* TvShow::createItem(const string& str) {
@@ -25,49 +27,91 @@ namespace seneca {
 
         stringstream ss(str);
 
-        string id, title, yearStr, summary;
+        string id, title, year, summary;
 
         getline(ss, id, ',');
         getline(ss, title, ',');
-        getline(ss, yearStr, ',');
+        getline(ss, year, ',');
         getline(ss, summary);
 
         MediaItem::trim(id);
         MediaItem::trim(title);
-        MediaItem::trim(yearStr);
+        MediaItem::trim(year);
         MediaItem::trim(summary);
 
-        return new TvShow(id, title, summary, stoi(yearStr));
+        return new TvShow(id, title, summary, stoi(year));
     }
 
-    void TvShow::addEpisode(const string& str) {
+    void TvShow::addEpisode(Collection& col, const string& str) {
 
-        Episode ep;
         stringstream ss(str);
 
-        string season, number, length;
+        string showID, season, number, airDate, length, title, summary;
 
-        getline(ss, ep.m_id, ',');
+        getline(ss, showID, ',');
         getline(ss, season, ',');
         getline(ss, number, ',');
-        getline(ss, ep.m_airDate, ',');
+        getline(ss, airDate, ',');
         getline(ss, length, ',');
-        getline(ss, ep.m_title, ',');
-        getline(ss, ep.m_summary);
+        getline(ss, title, ',');
+        getline(ss, summary);
 
-        MediaItem::trim(ep.m_id);
+        MediaItem::trim(showID);
         MediaItem::trim(season);
         MediaItem::trim(number);
-        MediaItem::trim(ep.m_airDate);
+        MediaItem::trim(airDate);
         MediaItem::trim(length);
-        MediaItem::trim(ep.m_title);
-        MediaItem::trim(ep.m_summary);
+        MediaItem::trim(title);
+        MediaItem::trim(summary);
 
-        ep.m_season = stoi(season);
-        ep.m_numberInSeason = stoi(number);
-        ep.m_length = stoi(length);
+        for (size_t i = 0; i < col.size(); i++) {
 
-        m_episodes.push_back(ep);
+            TvShow* show = dynamic_cast<TvShow*>(col[i]);
+
+            if (show && show->m_id == showID) {
+
+                Episode ep;
+                ep.m_showID = showID;
+                ep.m_season = stoi(season);
+                ep.m_numberInSeason = stoi(number);
+                ep.m_airDate = airDate;
+                ep.m_length = stoi(length);
+                ep.m_title = title;
+                ep.m_summary = summary;
+
+                show->m_episodes.push_back(ep);
+            }
+        }
+    }
+
+    double TvShow::getEpisodeAverageLength() const {
+
+        if (m_episodes.size() == 0)
+            return 0;
+
+        double total = 0;
+
+        for (size_t i = 0; i < m_episodes.size(); i++) {
+            total += m_episodes[i].m_length;
+        }
+
+        return total / m_episodes.size();
+    }
+
+    list<string> TvShow::getLongEpisodes() const {
+
+        list<string> result;
+
+        double avg = getEpisodeAverageLength();
+
+        for (size_t i = 0; i < m_episodes.size(); i++) {
+
+            if (m_episodes[i].m_length > avg) {
+                result.push_back(m_episodes[i].m_title);
+            }
+        }
+
+        return result;
     }
 
     void TvShow::display(ostream& out) const {
