@@ -5,13 +5,13 @@
     I declare that this submission is the result of my own work and I only copied the code that my professor provided to complete my assignments. This submitted piece of work has not been shared with any other student or 3rd party content provider.
 */
 
-
 #ifndef SENECA_TVSHOW_H
 #define SENECA_TVSHOW_H
 
 #include <string>
 #include <vector>
 #include <list>
+#include <sstream>
 #include "mediaItem.h"
 
 namespace seneca {
@@ -52,43 +52,48 @@ namespace seneca {
             if (str.size() == 0 || str[0] == '#')
                 throw "Not a valid episode.";
 
-            std::string temp = str;
-            std::string tokens[8];
+            std::stringstream ss(str);
 
-            size_t pos = 0;
+            std::string id, overall, season, number, airDate, length, title, summary;
 
-            for (int i = 0; i < 7; i++) {
-                pos = temp.find(',');
-                tokens[i] = temp.substr(0, pos);
-                MediaItem::trim(tokens[i]);
-                temp.erase(0, pos + 1);
-            }
+            std::getline(ss, id, ',');
+            std::getline(ss, overall, ',');
+            std::getline(ss, season, ',');
+            std::getline(ss, number, ',');
+            std::getline(ss, airDate, ',');
+            std::getline(ss, length, ',');
+            std::getline(ss, title, ',');
+            std::getline(ss, summary);
 
-            tokens[7] = temp;
-            MediaItem::trim(tokens[7]);
-
-            MediaItem::trim(tokens[0]);
+            MediaItem::trim(id);
+            MediaItem::trim(overall);
+            MediaItem::trim(season);
+            MediaItem::trim(number);
+            MediaItem::trim(airDate);
+            MediaItem::trim(length);
+            MediaItem::trim(title);
+            MediaItem::trim(summary);
 
             TvEpisode ep;
 
-            ep.m_numberOverall = std::stoi(tokens[1]);
+            ep.m_numberOverall = std::stoi(overall);
 
-            if (tokens[2].size() == 0)
+            if (season.size() == 0)
                 ep.m_season = 1;
             else
-                ep.m_season = std::stoi(tokens[2]);
+                ep.m_season = std::stoi(season);
 
-            ep.m_numberInSeason = std::stoi(tokens[3]);
-            ep.m_airDate = tokens[4];
-            ep.m_length = std::stoi(tokens[5]);
-            ep.m_title = tokens[6];
-            ep.m_summary = tokens[7];
+            ep.m_numberInSeason = std::stoi(number);
+            ep.m_airDate = airDate;
+            ep.m_length = std::stoi(length);
+            ep.m_title = title;
+            ep.m_summary = summary;
 
             for (size_t i = 0; i < col.size(); i++) {
 
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
 
-                if (show != nullptr && show->m_id == tokens[0]) {
+                if (show != nullptr && show->m_id == id) {
                     ep.m_show = show;
                     show->m_episodes.push_back(ep);
                 }
