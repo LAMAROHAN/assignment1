@@ -33,12 +33,18 @@ namespace seneca {
         m_observer = observer;
     }
 
+
     Collection& Collection::operator+=(MediaItem* item) {
 
-        bool exists = false;   // ✅ FIXED (VERY IMPORTANT)
+        if (item == nullptr)
+            return *this;
+
+        bool exists = false;
 
         for (size_t i = 0; i < m_items.size(); i++) {
-            if (m_items[i]->getTitle() == item->getTitle()) {
+
+            if (m_items[i] != nullptr &&
+                m_items[i]->getTitle() == item->getTitle()) {
                 exists = true;
             }
         }
@@ -77,7 +83,7 @@ namespace seneca {
         return nullptr;
     }
 
-    // remove quotes helper
+    
     std::string dequote(const std::string& str) {
         std::string res = str;
 
