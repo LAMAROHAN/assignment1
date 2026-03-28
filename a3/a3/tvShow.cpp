@@ -13,6 +13,11 @@ using namespace std;
 
 namespace seneca {
 
+    TvShow::TvShow(const string& id, const string& title,
+                   const string& summary, unsigned short year)
+        : MediaItem(id, title, summary, year) {
+    }
+
     TvShow* TvShow::createItem(const string& str) {
 
         if (str.size() == 0 || str[0] == '#')
@@ -33,6 +38,36 @@ namespace seneca {
         MediaItem::trim(summary);
 
         return new TvShow(id, title, summary, stoi(yearStr));
+    }
+
+    void TvShow::addEpisode(const string& str) {
+
+        Episode ep;
+        stringstream ss(str);
+
+        string season, number, length;
+
+        getline(ss, ep.m_id, ',');
+        getline(ss, season, ',');
+        getline(ss, number, ',');
+        getline(ss, ep.m_airDate, ',');
+        getline(ss, length, ',');
+        getline(ss, ep.m_title, ',');
+        getline(ss, ep.m_summary);
+
+        MediaItem::trim(ep.m_id);
+        MediaItem::trim(season);
+        MediaItem::trim(number);
+        MediaItem::trim(ep.m_airDate);
+        MediaItem::trim(length);
+        MediaItem::trim(ep.m_title);
+        MediaItem::trim(ep.m_summary);
+
+        ep.m_season = stoi(season);
+        ep.m_numberInSeason = stoi(number);
+        ep.m_length = stoi(length);
+
+        m_episodes.push_back(ep);
     }
 
     void TvShow::display(ostream& out) const {
