@@ -35,7 +35,7 @@ namespace seneca {
 
     Collection& Collection::operator+=(MediaItem* item) {
 
-        bool exists = false;
+        bool exists = false;   // ✅ FIXED (VERY IMPORTANT)
 
         for (size_t i = 0; i < m_items.size(); i++) {
             if (m_items[i]->getTitle() == item->getTitle()) {
@@ -77,7 +77,7 @@ namespace seneca {
         return nullptr;
     }
 
-    // 🔥 remove quotes helper
+    // remove quotes helper
     std::string dequote(const std::string& str) {
         std::string res = str;
 
@@ -96,11 +96,11 @@ namespace seneca {
 
         for (size_t i = 0; i < m_items.size(); i++) {
 
-            std::string t = m_items[i]->getTitle();
-            std::string s = m_items[i]->getSummary();
+            std::string title = m_items[i]->getTitle();
+            std::string summary = m_items[i]->getSummary();
 
-            m_items[i]->setTitle(dequote(t));
-            m_items[i]->setSummary(dequote(s));
+            m_items[i]->setTitle(dequote(title));
+            m_items[i]->setSummary(dequote(summary));
         }
     }
 
