@@ -16,9 +16,9 @@
 namespace seneca {
 
     class Collection {
-        std::string m_name;
-        std::vector<MediaItem*> m_items;
-        void (*m_observer)(const Collection&, const MediaItem&);
+        std::string m_name{};
+        std::vector<MediaItem*> m_items{};
+        void (*m_observer)(const Collection&, const MediaItem&){}; 
 
     public:
         Collection(const std::string& name);
