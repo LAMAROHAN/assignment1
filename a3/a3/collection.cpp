@@ -13,6 +13,7 @@ namespace seneca {
 
     Collection::Collection(const std::string& name) {
         m_name = name;
+        m_observer = nullptr;
     }
 
     Collection::~Collection() {
@@ -33,18 +34,14 @@ namespace seneca {
         m_observer = observer;
     }
 
-
     Collection& Collection::operator+=(MediaItem* item) {
-
         if (item == nullptr)
             return *this;
 
         bool exists = false;
 
         for (size_t i = 0; i < m_items.size(); i++) {
-
-            if (m_items[i] != nullptr &&
-                m_items[i]->getTitle() == item->getTitle()) {
+            if (m_items[i] != nullptr && m_items[i]->getTitle() == item->getTitle()) {
                 exists = true;
             }
         }
@@ -64,16 +61,16 @@ namespace seneca {
     }
 
     MediaItem* Collection::operator[](size_t idx) const {
-
         if (idx >= m_items.size()) {
-            throw std::out_of_range("Bad index");
+            throw std::out_of_range(
+                "Bad index [" + std::to_string(idx) + "]. Collection has [" + std::to_string(m_items.size()) + "] items."
+            );
         }
 
         return m_items[idx];
     }
 
     MediaItem* Collection::operator[](const std::string& title) const {
-
         for (size_t i = 0; i < m_items.size(); i++) {
             if (m_items[i]->getTitle() == title) {
                 return m_items[i];
@@ -83,7 +80,6 @@ namespace seneca {
         return nullptr;
     }
 
-    
     std::string dequote(const std::string& str) {
         std::string res = str;
 
@@ -99,9 +95,7 @@ namespace seneca {
     }
 
     void Collection::removeQuotes() {
-
         for (size_t i = 0; i < m_items.size(); i++) {
-
             std::string title = m_items[i]->getTitle();
             std::string summary = m_items[i]->getSummary();
 
@@ -111,17 +105,13 @@ namespace seneca {
     }
 
     void Collection::sort(const std::string& field) {
-
         if (field == "title") {
-
             std::sort(m_items.begin(), m_items.end(),
                 [](MediaItem* a, MediaItem* b) {
                     return a->getTitle() < b->getTitle();
                 });
-
         }
         else if (field == "year") {
-
             std::sort(m_items.begin(), m_items.end(),
                 [](MediaItem* a, MediaItem* b) {
                     return a->getYear() < b->getYear();
@@ -130,7 +120,6 @@ namespace seneca {
     }
 
     std::ostream& operator<<(std::ostream& out, const Collection& col) {
-
         for (size_t i = 0; i < col.size(); i++) {
             out << *col[i];
         }
