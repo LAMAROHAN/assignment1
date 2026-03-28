@@ -4,7 +4,6 @@
     Date: 03-28-2026
     I declare that this submission is the result of my own work and I only copied the code that my professor provided to complete my assignments. This submitted piece of work has not been shared with any other student or 3rd party content provider.
 */
-
 #include "tvShow.h"
 #include "settings.h"
 #include <sstream>
@@ -76,9 +75,21 @@ namespace seneca {
 
             for (size_t i = 0; i < m_episodes.size(); i++) {
 
-                out << "    S" << setw(2) << setfill('0') << m_episodes[i].m_season
-                    << "E" << setw(2) << m_episodes[i].m_numberInSeason
-                    << " " << m_episodes[i].m_title << '\n';
+                out << "    S";
+
+                if (m_episodes[i].m_season < 10)
+                    out << "0";
+
+                out << m_episodes[i].m_season;
+
+                out << "E";
+
+                if (m_episodes[i].m_numberInSeason < 10)
+                    out << "0";
+
+                out << m_episodes[i].m_numberInSeason;
+
+                out << " " << m_episodes[i].m_title << '\n';
             }
 
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
