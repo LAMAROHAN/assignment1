@@ -52,7 +52,7 @@ namespace seneca {
 
         for (size_t i = 0; i < 6; i++) {
 
-            out << std::right << std::setw(15) << m_badWords[i]
+            out << std::left << std::setw(15) << m_badWords[i]
                 << ": " << m_counts[i] << " replacements\n";
         }
     }
