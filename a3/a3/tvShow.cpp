@@ -88,9 +88,9 @@ namespace seneca {
                 out << "    S"
                     << std::setw(2) << std::setfill('0') << m_episodes[i].m_season
                     << "E"
-                    << std::setw(2) << m_episodes[i].m_numberInSeason
-                    << " "
-                    << m_episodes[i].m_title << '\n';
+                    << std::setw(2) << std::setfill('0') << m_episodes[i].m_numberInSeason
+                    << std::setfill(' ')
+                    << " \"" << m_episodes[i].m_title << "\"\n";
             }
 
             out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
