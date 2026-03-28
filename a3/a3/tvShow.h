@@ -17,27 +17,27 @@
 namespace seneca {
 
     struct TvEpisode {
-        const class TvShow* m_show;
-        unsigned short m_numberOverall;
-        unsigned short m_season;
-        unsigned short m_numberInSeason;
-        std::string m_airDate;
-        unsigned int m_length;
-        std::string m_title;
-        std::string m_summary;
+        const class TvShow* m_show{};
+        unsigned short m_numberOverall{};
+        unsigned short m_season{};
+        unsigned short m_numberInSeason{};
+        std::string m_airDate{};
+        unsigned int m_length{};
+        std::string m_title{};
+        std::string m_summary{};
     };
 
     class TvShow : public MediaItem {
 
-        std::string m_id;
-        std::vector<TvEpisode> m_episodes;
+        std::string m_id{};
+        std::vector<TvEpisode> m_episodes{};
 
     public:
 
         TvShow(const std::string& id,
-            const std::string& title,
-            const std::string& summary,
-            unsigned short year)
+               const std::string& title,
+               const std::string& summary,
+               unsigned short year)
             : MediaItem(title, summary, year) {
             m_id = id;
         }
@@ -67,6 +67,8 @@ namespace seneca {
             tokens[7] = temp;
             MediaItem::trim(tokens[7]);
 
+            MediaItem::trim(tokens[0]);
+
             TvEpisode ep;
 
             ep.m_numberOverall = std::stoi(tokens[1]);
@@ -87,7 +89,6 @@ namespace seneca {
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
 
                 if (show != nullptr && show->m_id == tokens[0]) {
-
                     ep.m_show = show;
                     show->m_episodes.push_back(ep);
                 }
