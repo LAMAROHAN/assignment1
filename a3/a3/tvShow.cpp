@@ -57,7 +57,6 @@ namespace seneca {
             std::string summary = getSummary();
 
             if (g_settings.m_maxSummaryWidth > -1) {
-
                 if (summary.length() <= (size_t)g_settings.m_maxSummaryWidth)
                     out << summary;
                 else
@@ -90,9 +89,12 @@ namespace seneca {
                 out << "    S"
                     << std::setw(2) << m_episodes[i].m_season
                     << "E"
-                    << std::setw(2) << m_episodes[i].m_numberInSeason
-                    << std::setfill(' ')
-                    << " \"" << m_episodes[i].m_title << "\"\n";
+                    << std::setw(2) << m_episodes[i].m_numberInSeason;
+
+                out << std::setfill(' ');
+
+                // ✅ FIXED (NO EXTRA QUOTES)
+                out << " " << m_episodes[i].m_title << "\n";
 
                 size_t pos2 = 0;
 
