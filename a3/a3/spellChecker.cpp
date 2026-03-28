@@ -15,13 +15,11 @@ namespace seneca {
 
         std::ifstream file(filename);
 
-        if (!file) {
+        if (!file)
             throw "Bad file name!";
-        }
 
         for (size_t i = 0; i < 6; i++) {
-            file >> m_badWords[i];
-            file >> m_goodWords[i];
+            file >> m_badWords[i] >> m_goodWords[i];
             m_counts[i] = 0;
         }
     }
@@ -41,7 +39,7 @@ namespace seneca {
 
                 text.replace(pos, m_badWords[i].length(), m_goodWords[i]);
 
-                pos = pos + m_goodWords[i].length();
+                pos += m_goodWords[i].length();
 
                 m_counts[i]++;
             }
@@ -54,8 +52,8 @@ namespace seneca {
 
         for (size_t i = 0; i < 6; i++) {
 
-            out << std::right << std::setw(15) << m_badWords[i];
-            out << ": " << m_counts[i] << " replacements\n";
+            out << std::right << std::setw(15) << m_badWords[i]
+                << ": " << m_counts[i] << " replacements\n";
         }
     }
 
