@@ -75,63 +75,6 @@ namespace seneca {
         }
     }
 
-    template<typename Collection_t>
-    void TvShow::addEpisode(Collection_t& col, const string& str) {
-        if (str.empty() || str[0] == '#')
-            throw "Not a valid episode.";
-
-        stringstream ss(str);
-        string showID, numOverall, season, numInSeason, airDate, length, title, summary;
-
-        getline(ss, showID, ',');
-        getline(ss, numOverall, ',');
-        getline(ss, season, ',');
-        getline(ss, numInSeason, ',');
-        getline(ss, airDate, ',');
-        getline(ss, length, ',');
-        getline(ss, title, ',');
-        getline(ss, summary);
-
-        MediaItem::trim(showID);
-        MediaItem::trim(numOverall);
-        MediaItem::trim(season);
-        MediaItem::trim(numInSeason);
-        MediaItem::trim(airDate);
-        MediaItem::trim(length);
-        MediaItem::trim(title);
-        MediaItem::trim(summary);
-
-        if (showID.empty() || numOverall.empty() || numInSeason.empty() || length.empty())
-            throw "Not a valid episode.";
-
-        TvEpisode ep{};
-        ep.m_numberOverall = stoi(numOverall);
-        ep.m_season = season.empty() ? 1 : stoi(season);
-        ep.m_numberInSeason = stoi(numInSeason);
-        ep.m_airDate = airDate;
-        ep.m_length = stoi(length);
-        ep.m_title = title;
-        ep.m_summary = summary;
-
-        for (size_t i = 0; i < col.size(); i++) {
-            TvShow* show = dynamic_cast<TvShow*>(col[i]);
-
-            if (show != nullptr) {
-                string id1 = show->m_id;
-                string id2 = showID;
-
-                MediaItem::trim(id1);
-                MediaItem::trim(id2);
-
-                if (id1 == id2) {
-                    ep.m_show = show;
-                    show->m_episodes.push_back(ep);
-                    break;
-                }
-            }
-        }
-    }
-
     double TvShow::getEpisodeAverageLength() const {
         if (m_episodes.empty())
             return 0;
