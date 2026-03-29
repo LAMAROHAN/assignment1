@@ -15,90 +15,108 @@
 
 namespace seneca {
 
-    struct TvEpisode {
-        const class TvShow* m_show{};
-        unsigned short m_numberOverall{};
-        unsigned short m_season{};
-        unsigned short m_numberInSeason{};
-        std::string m_airDate{};
-        unsigned int m_length{};
-        std::string m_title{};
-        std::string m_summary{};
-    };
+struct TvEpisode {
+    const class TvShow* m_show{};
+    unsigned short m_numberOverall{};
+    unsigned short m_season{};
+    unsigned short m_numberInSeason{};
+    std::string m_airDate{};
+    unsigned int m_length{};
+    std::string m_title{};
+    std::string m_summary{};
+};
 
-    class TvShow : public MediaItem {
-        std::string m_id{};
-        std::vector<TvEpisode> m_episodes{};
+class TvShow : public MediaItem {
+    std::string m_id;
+    std::vector<TvEpisode> m_episodes;
 
-    public:
-        TvShow(const std::string& id, const std::string& title,
-               const std::string& summary, unsigned short year);
+public:
+    TvShow(const std::string& id, const std::string& title,
+        const std::string& summary, unsigned short year);
 
-        static TvShow* createItem(const std::string& str);
+    static TvShow* createItem(const std::string& str);
 
-        void display(std::ostream& out = std::cout) const override;
+    void display(std::ostream& out = std::cout) const override;
 
-        template<typename Collection_t>
-        static void addEpisode(Collection_t& col, const std::string& str)
-        {
-            if (str.empty() || str[0] == '#')
-                throw "Not a valid episode.";
+    template<typename Collection_t>
+    static void addEpisode(Collection_t& col, const std::string& str) {
 
-            std::stringstream ss(str);
+        if (str.size() == 0 || str[0] == '#')
+            throw "Not a valid episode.";
 
-            std::string showID, overall, season, inSeason, airDate, length, title, summary;
+        std::stringstream ss(str);
 
-            getline(ss, showID, ',');
-            getline(ss, overall, ',');
-            getline(ss, season, ',');
-            getline(ss, inSeason, ',');
-            getline(ss, airDate, ',');
-            getline(ss, length, ',');
-            getline(ss, title, ',');
-            getline(ss, summary);
+        std::string showID;
+        std::string overall;
+        std::string season;
+        std::string inSeason;
+        std::string airDate;
+        std::string length;
+        std::string title;
+        std::string summary;
 
-            MediaItem::trim(showID);
-            MediaItem::trim(overall);
-            MediaItem::trim(season);
-            MediaItem::trim(inSeason);
-            MediaItem::trim(airDate);
-            MediaItem::trim(length);
-            MediaItem::trim(title);
-            MediaItem::trim(summary);
+        getline(ss, showID, ',');
+        getline(ss, overall, ',');
+        getline(ss, season, ',');
+        getline(ss, inSeason, ',');
+        getline(ss, airDate, ',');
+        getline(ss, length, ',');
+        getline(ss, title, ',');
+        getline(ss, summary);
 
-            if (showID.empty() || overall.empty() || inSeason.empty() || length.empty())
-                throw "Not a valid episode.";
+        MediaItem::trim(showID);
+        MediaItem::trim(overall);
+        MediaItem::trim(season);
+        MediaItem::trim(inSeason);
+        MediaItem::trim(airDate);
+        MediaItem::trim(length);
+        MediaItem::trim(title);
+        MediaItem::trim(summary);
 
-            TvEpisode ep{};
+        if (showID.size() == 0 || overall.size() == 0 || inSeason.size() == 0 || length.size() == 0)
+            throw "Not a valid episode.";
 
-            ep.m_numberOverall = (unsigned short)std::stoi(overall);
-            ep.m_season = season.empty() ? 1 : (unsigned short)std::stoi(season);
-            ep.m_numberInSeason = (unsigned short)std::stoi(inSeason);
+        TvEpisode ep;
 
-            ep.m_airDate = airDate;
+        ep.m_numberOverall = (unsigned short)std::stoi(overall);
 
-            int h = 0, m = 0, s = 0;
-            char c;
-            std::stringstream time(length);
-            time >> h >> c >> m >> c >> s;
-            ep.m_length = h * 3600 + m * 60 + s;
+        if (season.size() == 0)
+            ep.m_season = 1;
+        else
+            ep.m_season = (unsigned short)std::stoi(season);
 
-            ep.m_title = title;
-            ep.m_summary = summary;
+        ep.m_numberInSeason = (unsigned short)std::stoi(inSeason);
 
-            for (size_t i = 0; i < col.size(); i++) {
-                TvShow* show = dynamic_cast<TvShow*>(col[i]);
-                if (show != nullptr && show->m_id == showID) {
+        ep.m_airDate = airDate;
+
+        int h = 0;
+        int m = 0;
+        int s = 0;
+        char c;
+
+        std::stringstream time(length);
+        time >> h >> c >> m >> c >> s;
+
+        ep.m_length = h * 3600 + m * 60 + s;
+
+        ep.m_title = title;
+        ep.m_summary = summary;
+
+        for (size_t i = 0; i < col.size(); i++) {
+            TvShow* show = dynamic_cast<TvShow*>(col[i]);
+            if (show != nullptr) {
+                if (show->m_id == showID) {
                     ep.m_show = show;
                     show->m_episodes.push_back(ep);
                     break;
                 }
             }
         }
+    }
 
-        double getEpisodeAverageLength() const;
-        std::list<std::string> getLongEpisodes() const;
-    };
+    double getEpisodeAverageLength() const;
+    std::list<std::string> getLongEpisodes() const;
+};
 
 }
 
