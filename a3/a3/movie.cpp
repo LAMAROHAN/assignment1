@@ -4,97 +4,117 @@
     Date: 03-28-2026
     I declare that this submission is the result of my own work and I only copied the code that my professor provided to complete my assignments. This submitted piece of work has not been shared with any other student or 3rd party content provider.
 */
-
 #include "movie.h"
 #include "settings.h"
 #include <iomanip>
 #include <sstream>
 
+using namespace std;
+
 namespace seneca {
 
-    Movie::Movie(const std::string& title,
-        unsigned short year,
-        const std::string& summary)
-        : MediaItem(title, summary, year) {
-    }
+Movie::Movie(const string& title,
+    unsigned short year,
+    const string& summary)
+    : MediaItem(title, summary, year) {
+}
 
-    void Movie::display(std::ostream& out) const {
+void Movie::display(ostream& out) const {
 
-        if (g_settings.m_tableView) {
+    if (g_settings.m_tableView) {
 
-            out << "M | ";
+        out << "M | ";
 
-            out << std::left << std::setfill('.');
-            out << std::setw(50) << getTitle() << " | ";
+        out << left;
+        out << setfill('.');
+        out << setw(50) << getTitle();
+        out << " | ";
 
-            out << std::right << std::setfill(' ');
-            out << std::setw(9) << getYear() << " | ";
+        out << right;
+        out << setfill(' ');
+        out << setw(9) << getYear();
+        out << " | ";
 
-            out << std::left;
+        out << left;
 
-            std::string summary = getSummary();
+        string summary = getSummary();
 
-            if (g_settings.m_maxSummaryWidth > -1) {
+        if (g_settings.m_maxSummaryWidth > -1) {
 
-                if (summary.length() <= (size_t)g_settings.m_maxSummaryWidth)
-                    out << summary;
-                else
-                    out << summary.substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
-            }
-            else {
+            if ((int)summary.size() <= g_settings.m_maxSummaryWidth) {
                 out << summary;
+            } else {
+                out << summary.substr(0, g_settings.m_maxSummaryWidth - 3);
+                out << "...";
             }
-
-            out << std::endl;
+        } else {
+            out << summary;
         }
-        else {
 
-            out << getTitle() << " [" << getYear() << "]\n";
+        out << endl;
+    }
+    else {
 
-            out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
+        out << getTitle() << " [" << getYear() << "]\n";
 
-            std::string summary = getSummary();
-            size_t pos = 0;
+        out << setw(getTitle().size() + 7);
+        out << setfill('-');
+        out << "";
+        out << '\n';
 
-            while (pos < summary.length()) {
-                out << "    " << summary.substr(pos, g_settings.m_maxSummaryWidth) << '\n';
-                pos += g_settings.m_maxSummaryWidth;
-            }
+        string summary = getSummary();
+        size_t pos = 0;
 
-            out << std::setw(getTitle().length() + 7) << std::setfill('-') << "" << '\n';
-            out << std::setfill(' ');
+        while (pos < summary.size()) {
+            out << "    ";
+            out << summary.substr(pos, g_settings.m_maxSummaryWidth);
+            out << '\n';
+            pos = pos + g_settings.m_maxSummaryWidth;
         }
+
+        out << setw(getTitle().size() + 7);
+        out << setfill('-');
+        out << "";
+        out << '\n';
+
+        out << setfill(' ');
+    }
+}
+
+Movie* Movie::createItem(const string& strMovie) {
+
+    if (strMovie.size() == 0 || strMovie[0] == '#')
+        throw "Not a valid movie.";
+
+    stringstream ss(strMovie);
+
+    string title;
+    string yearStr;
+    string summary;
+
+    getline(ss, title, ',');
+    getline(ss, yearStr, ',');
+    getline(ss, summary);
+
+    MediaItem::trim(title);
+    MediaItem::trim(yearStr);
+    MediaItem::trim(summary);
+
+    unsigned short year = 0;
+
+    try {
+        year = (unsigned short)stoi(yearStr);
+    }
+    catch (...) {
+        throw "Not a valid movie.";
     }
 
-    Movie* Movie::createItem(const std::string& strMovie) {
-
-        if (strMovie.size() == 0 || strMovie[0] == '#')
-            throw "Not a valid movie.";
-
-        std::stringstream ss(strMovie);
-
-        std::string title;
-        std::string yearStr;
-        std::string summary;
-
-        std::getline(ss, title, ',');
-        std::getline(ss, yearStr, ',');
-        std::getline(ss, summary);
-
-        MediaItem::trim(title);
-        MediaItem::trim(yearStr);
-        MediaItem::trim(summary);
-
-        unsigned short year;
-
-        try {
-            year = (unsigned short)std::stoi(yearStr);
-        }
-        catch (...) {
-            throw "Not a valid movie.";
-        }
-
-        return new Movie(title, year, summary);
-    }
+    Movie* m = new Movie(title, year, summary);
+    return m;
+}
 
 }
+
+
+
+  
