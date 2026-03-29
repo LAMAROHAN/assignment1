@@ -82,11 +82,13 @@ void TvShow::display(ostream& out) const {
                 << " " << m_episodes[i].m_title << '\n';
 
             size_t pos2 = 0;
+            size_t width = g_settings.m_maxSummaryWidth - 8;
+
             while (pos2 < m_episodes[i].m_summary.size()) {
                 out << "            "
-                    << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth)
+                    << m_episodes[i].m_summary.substr(pos2, width)
                     << '\n';
-                pos2 += g_settings.m_maxSummaryWidth;
+                pos2 += width;
             }
         }
 
