@@ -9,122 +9,151 @@
 #include <algorithm>
 #include <stdexcept>
 
+using namespace std;
+
 namespace seneca {
 
-    Collection::Collection(const std::string& name) {
-        m_name = name;
-        m_observer = nullptr;
+Collection::Collection(const string& name) {
+    m_name = name;
+    m_observer = nullptr;
+}
+
+Collection::~Collection() {
+    for (size_t i = 0; i < m_items.size(); i++) {
+        delete m_items[i];
     }
+}
 
-    Collection::~Collection() {
-        for (size_t i = 0; i < m_items.size(); i++) {
-            delete m_items[i];
-        }
-    }
+const string& Collection::name() const {
+    return m_name;
+}
 
-    const std::string& Collection::name() const {
-        return m_name;
-    }
+size_t Collection::size() const {
+    return m_items.size();
+}
 
-    size_t Collection::size() const {
-        return m_items.size();
-    }
+void Collection::setObserver(void (*observer)(const Collection&, const MediaItem&)) {
+    m_observer = observer;
+}
 
-    void Collection::setObserver(void (*observer)(const Collection&, const MediaItem&)) {
-        m_observer = observer;
-    }
+Collection& Collection::operator+=(MediaItem* item) {
 
-    Collection& Collection::operator+=(MediaItem* item) {
-        if (item == nullptr)
-            return *this;
-
-        bool exists = false;
-
-        for (size_t i = 0; i < m_items.size(); i++) {
-            if (m_items[i] != nullptr && m_items[i]->getTitle() == item->getTitle()) {
-                exists = true;
-            }
-        }
-
-        if (!exists) {
-            m_items.push_back(item);
-
-            if (m_observer != nullptr) {
-                m_observer(*this, *item);
-            }
-        }
-        else {
-            delete item;
-        }
-
+    if (item == nullptr) {
         return *this;
     }
 
-    MediaItem* Collection::operator[](size_t idx) const {
-        if (idx >= m_items.size()) {
-            throw std::out_of_range(
-                "Bad index [" + std::to_string(idx) + "]. Collection has [" + std::to_string(m_items.size()) + "] items."
-            );
-        }
+    bool exists = false;
 
-        return m_items[idx];
+    for (size_t i = 0; i < m_items.size(); i++) {
+        if (m_items[i] != nullptr) {
+            if (m_items[i]->getTitle() == item->getTitle()) {
+                exists = true;
+            }
+        }
     }
 
-    MediaItem* Collection::operator[](const std::string& title) const {
+    if (!exists) {
+        m_items.push_back(item);
+
+        if (m_observer != nullptr) {
+            m_observer(*this, *item);
+        }
+    }
+    else {
+        delete item;
+    }
+
+    return *this;
+}
+
+MediaItem* Collection::operator[](size_t idx) const {
+
+    if (idx >= m_items.size()) {
+        throw out_of_range(
+            "Bad index [" + to_string(idx) + "]. Collection has [" + to_string(m_items.size()) + "] items."
+        );
+    }
+
+    return m_items[idx];
+}
+
+MediaItem* Collection::operator[](const string& title) const {
+
+    for (size_t i = 0; i < m_items.size(); i++) {
+        if (m_items[i]->getTitle() == title) {
+            return m_items[i];
+        }
+    }
+
+    return nullptr;
+}
+
+string dequote(const string& str) {
+
+    string res = str;
+
+    if (res.size() > 0 && res[0] == '"') {
+        res.erase(0, 1);
+    }
+
+    if (res.size() > 0 && res[res.size() - 1] == '"') {
+        res.erase(res.size() - 1, 1);
+    }
+
+    return res;
+}
+
+void Collection::removeQuotes() {
+
+    for (size_t i = 0; i < m_items.size(); i++) {
+
+        string title = m_items[i]->getTitle();
+        string summary = m_items[i]->getSummary();
+
+        m_items[i]->setTitle(dequote(title));
+        m_items[i]->setSummary(dequote(summary));
+    }
+}
+
+void Collection::sort(const string& field) {
+
+    if (field == "title") {
+
         for (size_t i = 0; i < m_items.size(); i++) {
-            if (m_items[i]->getTitle() == title) {
-                return m_items[i];
+            for (size_t j = i + 1; j < m_items.size(); j++) {
+
+                if (m_items[j]->getTitle() < m_items[i]->getTitle()) {
+                    MediaItem* temp = m_items[i];
+                    m_items[i] = m_items[j];
+                    m_items[j] = temp;
+                }
             }
         }
 
-        return nullptr;
     }
+    else if (field == "year") {
 
-    std::string dequote(const std::string& str) {
-        std::string res = str;
-
-        if (!res.empty() && res[0] == '"') {
-            res.erase(0, 1);
-        }
-
-        if (!res.empty() && res[res.size() - 1] == '"') {
-            res.erase(res.size() - 1, 1);
-        }
-
-        return res;
-    }
-
-    void Collection::removeQuotes() {
         for (size_t i = 0; i < m_items.size(); i++) {
-            std::string title = m_items[i]->getTitle();
-            std::string summary = m_items[i]->getSummary();
+            for (size_t j = i + 1; j < m_items.size(); j++) {
 
-            m_items[i]->setTitle(dequote(title));
-            m_items[i]->setSummary(dequote(summary));
+                if (m_items[j]->getYear() < m_items[i]->getYear()) {
+                    MediaItem* temp = m_items[i];
+                    m_items[i] = m_items[j];
+                    m_items[j] = temp;
+                }
+            }
         }
+
+    }
+}
+
+ostream& operator<<(ostream& out, const Collection& col) {
+
+    for (size_t i = 0; i < col.size(); i++) {
+        out << *col[i];
     }
 
-    void Collection::sort(const std::string& field) {
-        if (field == "title") {
-            std::sort(m_items.begin(), m_items.end(),
-                [](MediaItem* a, MediaItem* b) {
-                    return a->getTitle() < b->getTitle();
-                });
-        }
-        else if (field == "year") {
-            std::sort(m_items.begin(), m_items.end(),
-                [](MediaItem* a, MediaItem* b) {
-                    return a->getYear() < b->getYear();
-                });
-        }
-    }
-
-    std::ostream& operator<<(std::ostream& out, const Collection& col) {
-        for (size_t i = 0; i < col.size(); i++) {
-            out << *col[i];
-        }
-
-        return out;
-    }
+    return out;
+}
 
 }
