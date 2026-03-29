@@ -53,9 +53,9 @@ void TvShow::display(ostream& out) const {
                 out << getSummary();
             else
                 out << getSummary().substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
-        }
-        else
+        } else {
             out << getSummary();
+        }
 
         out << endl;
     }
@@ -78,8 +78,12 @@ void TvShow::display(ostream& out) const {
                 << "E"
                 << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason
                 << setfill(' ')
-                << left
-                << " " << m_episodes[i].m_title << '\n';
+                << left;
+
+            if (!m_episodes[i].m_title.empty())
+                out << " " << m_episodes[i].m_title << '\n';
+            else
+                out << " Episode " << m_episodes[i].m_numberOverall << '\n';
 
             size_t pos2 = 0;
             size_t width = g_settings.m_maxSummaryWidth - 8;
@@ -103,6 +107,7 @@ double TvShow::getEpisodeAverageLength() const {
     for (size_t i = 0; i < m_episodes.size(); i++) {
         total += m_episodes[i].m_length;
     }
+
     return total / m_episodes.size();
 }
 
