@@ -7,7 +7,6 @@
 #include "tvShow.h"
 #include "settings.h"
 #include <iomanip>
-#include <sstream>
 
 using namespace std;
 
@@ -23,6 +22,7 @@ namespace seneca {
             throw "Not a valid show.";
 
         stringstream ss(str);
+
         string id, title, yearStr, summary;
 
         getline(ss, id, ',');
@@ -35,7 +35,7 @@ namespace seneca {
         MediaItem::trim(yearStr);
         MediaItem::trim(summary);
 
-        return new TvShow(id, title, summary, stoi(yearStr));
+        return new TvShow(id, title, summary, (unsigned short)stoi(yearStr));
     }
 
     void TvShow::display(ostream& out) const {
@@ -75,8 +75,7 @@ namespace seneca {
                 out << setw(2) << setfill('0') << m_episodes[i].m_season;
                 out << "E";
                 out << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason;
-                out << " \"" << m_episodes[i].m_title << "\"\n";
-                out << setfill(' ');
+                out << " " << m_episodes[i].m_title << '\n';
             }
 
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
@@ -84,25 +83,25 @@ namespace seneca {
     }
 
     double TvShow::getEpisodeAverageLength() const {
-        if (m_episodes.empty())
-            return 0;
+        if (m_episodes.empty()) return 0;
 
         double total = 0;
-        for (size_t i = 0; i < m_episodes.size(); i++)
+        for (size_t i = 0; i < m_episodes.size(); i++) {
             total += m_episodes[i].m_length;
+        }
 
         return total / m_episodes.size();
     }
 
-    list<string> TvShow::getLongEpisodes() const {
-        list<string> result;
+    std::list<std::string> TvShow::getLongEpisodes() const {
+        std::list<std::string> result;
 
         for (size_t i = 0; i < m_episodes.size(); i++) {
-            if (m_episodes[i].m_length >= 3600)
+            if (m_episodes[i].m_length >= 3600) {
                 result.push_back(m_episodes[i].m_title);
+            }
         }
 
         return result;
     }
-
 }
