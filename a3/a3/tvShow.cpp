@@ -65,21 +65,33 @@ namespace seneca {
             out << getTitle() << " [" << getYear() << "]\n";
             out << setw(getTitle().size() + 7) << setfill('-') << "" << '\n';
 
+            // Show summary
             while (pos < getSummary().size()) {
                 out << "    " << getSummary().substr(pos, g_settings.m_maxSummaryWidth) << '\n';
                 pos += g_settings.m_maxSummaryWidth;
             }
 
-            // 🔥 FIXED EPISODE PRINTING
+            // 🔥 FINAL CORRECT EPISODE PRINTING
             for (size_t i = 0; i < m_episodes.size(); i++) {
+
+                // Episode line
                 out << "    S"
                     << right
                     << setw(2) << setfill('0') << m_episodes[i].m_season
                     << "E"
                     << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason
-                    << setfill(' ')   // reset fill
-                    << left           // reset alignment
+                    << setfill(' ')
+                    << left
                     << " " << m_episodes[i].m_title << '\n';
+
+                // Episode summary (WRAPPED)
+                size_t pos2 = 0;
+                while (pos2 < m_episodes[i].m_summary.size()) {
+                    out << "            "   // 12 spaces indent
+                        << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth - 12)
+                        << '\n';
+                    pos2 += g_settings.m_maxSummaryWidth - 12;
+                }
             }
 
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
