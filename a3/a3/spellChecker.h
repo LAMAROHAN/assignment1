@@ -13,18 +13,20 @@
 
 namespace seneca {
 
-    class SpellChecker {
-        std::string m_badWords[6];
-        std::string m_goodWords[6];
-        size_t m_counts[6];
+class SpellChecker {
 
-    public:
-        SpellChecker(const char* filename);
+    std::string m_badWords[6];
+    std::string m_goodWords[6];
+    size_t m_counts[6];
 
-        void operator()(std::string& text);
+public:
 
-        void showStatistics(std::ostream& out) const;
-    };
+    SpellChecker(const char* filename);
+
+    void operator()(std::string& text);
+
+    void showStatistics(std::ostream& out) const;
+};
 
 }
 
