@@ -11,13 +11,13 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <sstream>
 
 namespace seneca {
 
     class Collection;
 
     class TvShow : public MediaItem {
+
         struct Episode {
             std::string m_title{};
             unsigned short m_season{};
@@ -32,15 +32,16 @@ namespace seneca {
 
     public:
         TvShow(const std::string& id, const std::string& title,
-            const std::string& summary, unsigned short year)
-            : MediaItem(title, summary, year) {
-            m_id = id;
-        }
+               const std::string& summary, unsigned short year);
 
         static TvShow* createItem(const std::string& str);
+
         static void addEpisode(Collection& col, const std::string& str);
+
         double getEpisodeAverageLength() const;
+
         std::list<std::string> getLongEpisodes() const;
+
         void display(std::ostream& out) const override;
     };
 
