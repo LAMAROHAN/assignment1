@@ -74,8 +74,15 @@ namespace seneca {
             ep.m_numberOverall = (unsigned short)std::stoi(overall);
             ep.m_season = season.empty() ? 1 : (unsigned short)std::stoi(season);
             ep.m_numberInSeason = (unsigned short)std::stoi(inSeason);
+
             ep.m_airDate = airDate;
-            ep.m_length = std::stoi(length);
+
+            int h = 0, m = 0, s = 0;
+            char c;
+            std::stringstream time(length);
+            time >> h >> c >> m >> c >> s;
+            ep.m_length = h * 3600 + m * 60 + s;
+
             ep.m_title = title;
             ep.m_summary = summary;
 
