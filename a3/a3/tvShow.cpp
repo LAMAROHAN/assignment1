@@ -70,6 +70,15 @@ namespace seneca {
                 pos += g_settings.m_maxSummaryWidth;
             }
 
+            for (size_t i = 0; i < m_episodes.size(); i++) {
+                out << "    S";
+                out << setw(2) << setfill('0') << m_episodes[i].m_season;
+                out << "E";
+                out << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason;
+                out << " \"" << m_episodes[i].m_title << "\"\n";
+                out << setfill(' ');
+            }
+
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
         }
     }
