@@ -6,8 +6,8 @@
 */
 #include "tvShow.h"
 #include "settings.h"
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -53,9 +53,9 @@ namespace seneca {
                     out << getSummary();
                 else
                     out << getSummary().substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
-            } else {
-                out << getSummary();
             }
+            else
+                out << getSummary();
 
             out << endl;
         }
@@ -63,7 +63,6 @@ namespace seneca {
             size_t pos = 0;
 
             out << getTitle() << " [" << getYear() << "]\n";
-
             out << setw(getTitle().size() + 7) << setfill('-') << "" << '\n';
 
             while (pos < getSummary().size()) {
@@ -80,7 +79,6 @@ namespace seneca {
             return 0;
 
         double total = 0;
-
         for (size_t i = 0; i < m_episodes.size(); i++)
             total += m_episodes[i].m_length;
 
