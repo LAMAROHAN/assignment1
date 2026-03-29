@@ -13,7 +13,7 @@ using namespace std;
 namespace seneca {
 
     TvShow::TvShow(const string& id, const string& title,
-                   const string& summary, unsigned short year)
+        const string& summary, unsigned short year)
         : MediaItem(title, summary, year), m_id(id) {
     }
 
@@ -70,12 +70,16 @@ namespace seneca {
                 pos += g_settings.m_maxSummaryWidth;
             }
 
+            // 🔥 FIXED EPISODE PRINTING
             for (size_t i = 0; i < m_episodes.size(); i++) {
-                out << "    S";
-                out << setw(2) << setfill('0') << m_episodes[i].m_season;
-                out << "E";
-                out << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason;
-                out << " " << m_episodes[i].m_title << '\n';
+                out << "    S"
+                    << right
+                    << setw(2) << setfill('0') << m_episodes[i].m_season
+                    << "E"
+                    << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason
+                    << setfill(' ')   // reset fill
+                    << left           // reset alignment
+                    << " " << m_episodes[i].m_title << '\n';
             }
 
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
