@@ -9,52 +9,59 @@
 #include <fstream>
 #include <iomanip>
 
+using namespace std;
+
 namespace seneca {
 
-    SpellChecker::SpellChecker(const char* filename) {
+SpellChecker::SpellChecker(const char* filename) {
 
-        std::ifstream file(filename);
+    ifstream file(filename);
 
-        if (!file)
-            throw "Bad file name!";
-
-        for (size_t i = 0; i < 6; i++) {
-            file >> m_badWords[i] >> m_goodWords[i];
-            m_counts[i] = 0;
-        }
+    if (!file) {
+        throw "Bad file name!";
     }
 
-    void SpellChecker::operator()(std::string& text) {
+    for (size_t i = 0; i < 6; i++) {
+        file >> m_badWords[i];
+        file >> m_goodWords[i];
+        m_counts[i] = 0;
+    }
+}
 
-        for (size_t i = 0; i < 6; i++) {
+void SpellChecker::operator()(string& text) {
 
-            size_t pos = 0;
+    for (size_t i = 0; i < 6; i++) {
 
-            while (true) {
+        size_t pos = 0;
 
-                pos = text.find(m_badWords[i], pos);
+        bool done = false;
 
-                if (pos == std::string::npos)
-                    break;
+        while (!done) {
 
-                text.replace(pos, m_badWords[i].length(), m_goodWords[i]);
+            size_t found = text.find(m_badWords[i], pos);
 
-                pos += m_goodWords[i].length();
-
+            if (found == string::npos) {
+                done = true;
+            } else {
+                text.replace(found, m_badWords[i].length(), m_goodWords[i]);
+                pos = found + m_goodWords[i].length();
                 m_counts[i]++;
             }
         }
     }
+}
 
-    void SpellChecker::showStatistics(std::ostream& out) const {
+void SpellChecker::showStatistics(ostream& out) const {
 
-        out << "Spellchecker Statistics\n";
+    out << "Spellchecker Statistics\n";
 
-        for (size_t i = 0; i < 6; i++) {
+    for (size_t i = 0; i < 6; i++) {
 
-            out << std::left << std::setw(15) << m_badWords[i]
-                << ": " << m_counts[i] << " replacements\n";
-        }
+        out << left << setw(15) << m_badWords[i];
+        out << ": ";
+        out << m_counts[i];
+        out << " replacements\n";
     }
+}
 
 }
