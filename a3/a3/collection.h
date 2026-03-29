@@ -15,32 +15,39 @@
 
 namespace seneca {
 
-    class Collection {
-        std::string m_name{};
-        std::vector<MediaItem*> m_items{};
-        void (*m_observer)(const Collection&, const MediaItem&){}; 
+class Collection {
 
-    public:
-        Collection(const std::string& name);
-        Collection(const Collection&) = delete;
-        Collection& operator=(const Collection&) = delete;
-        ~Collection();
+    std::string m_name;
+    std::vector<MediaItem*> m_items;
+    void (*m_observer)(const Collection&, const MediaItem&);
 
-        const std::string& name() const;
-        size_t size() const;
+public:
 
-        void setObserver(void (*observer)(const Collection&, const MediaItem&));
+    Collection(const std::string& name);
 
-        Collection& operator+=(MediaItem* item);
+    Collection(const Collection&) = delete;
+    Collection& operator=(const Collection&) = delete;
 
-        MediaItem* operator[](size_t idx) const;
-        MediaItem* operator[](const std::string& title) const;
+    ~Collection();
 
-        void removeQuotes();
-        void sort(const std::string& field);
-    };
+    const std::string& name() const;
 
-    std::ostream& operator<<(std::ostream& out, const Collection& col);
+    size_t size() const;
+
+    void setObserver(void (*observer)(const Collection&, const MediaItem&));
+
+    Collection& operator+=(MediaItem* item);
+
+    MediaItem* operator[](size_t idx) const;
+
+    MediaItem* operator[](const std::string& title) const;
+
+    void removeQuotes();
+
+    void sort(const std::string& field);
+};
+
+std::ostream& operator<<(std::ostream& out, const Collection& col);
 
 }
 
