@@ -66,7 +66,7 @@ namespace seneca {
             MediaItem::trim(summary);
 
             if (showID.empty() || numOverall.empty() || numInSeason.empty() || length.empty())
-                return;
+                throw "Not a valid episode.";
 
             TvEpisode ep{};
             ep.m_numberOverall = std::stoi(numOverall);
@@ -79,19 +79,10 @@ namespace seneca {
 
             for (size_t i = 0; i < col.size(); i++) {
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
-
-                if (show != nullptr) {
-                    std::string id1 = show->m_id;
-                    std::string id2 = showID;
-
-                    MediaItem::trim(id1);
-                    MediaItem::trim(id2);
-
-                    if (id1 == id2) {
-                        ep.m_show = show;
-                        show->m_episodes.push_back(ep);
-                        break;
-                    }
+                if (show && show->m_id == showID) {
+                    ep.m_show = show;
+                    show->m_episodes.push_back(ep);
+                    break;
                 }
             }
         }
