@@ -13,11 +13,9 @@ using namespace std;
 
 namespace seneca {
 
-```
 TvShow::TvShow(const string& id, const string& title,
     const string& summary, unsigned short year)
-    : MediaItem(title, summary, year), m_id(id) {
-}
+    : MediaItem(title, summary, year), m_id(id) {}
 
 TvShow* TvShow::createItem(const string& str) {
     if (str.empty() || str[0] == '#')
@@ -103,12 +101,11 @@ double TvShow::getEpisodeAverageLength() const {
     for (size_t i = 0; i < m_episodes.size(); i++) {
         total += m_episodes[i].m_length;
     }
-
     return total / m_episodes.size();
 }
 
-std::list<std::string> TvShow::getLongEpisodes() const {
-    std::list<std::string> result;
+list<string> TvShow::getLongEpisodes() const {
+    list<string> result;
 
     for (size_t i = 0; i < m_episodes.size(); i++) {
         if (m_episodes[i].m_length >= 3600) {
@@ -118,6 +115,5 @@ std::list<std::string> TvShow::getLongEpisodes() const {
 
     return result;
 }
-```
 
 }
