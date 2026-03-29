@@ -12,112 +12,111 @@ using namespace std;
 
 namespace seneca {
 
-    TvShow::TvShow(const string& id, const string& title,
-        const string& summary, unsigned short year)
-        : MediaItem(title, summary, year), m_id(id) {
-    }
+```
+TvShow::TvShow(const string& id, const string& title,
+    const string& summary, unsigned short year)
+    : MediaItem(title, summary, year), m_id(id) {
+}
 
-    TvShow* TvShow::createItem(const string& str) {
-        if (str.empty() || str[0] == '#')
-            throw "Not a valid show.";
+TvShow* TvShow::createItem(const string& str) {
+    if (str.empty() || str[0] == '#')
+        throw "Not a valid show.";
 
-        stringstream ss(str);
+    stringstream ss(str);
 
-        string id, title, yearStr, summary;
+    string id, title, yearStr, summary;
 
-        getline(ss, id, ',');
-        getline(ss, title, ',');
-        getline(ss, yearStr, ',');
-        getline(ss, summary);
+    getline(ss, id, ',');
+    getline(ss, title, ',');
+    getline(ss, yearStr, ',');
+    getline(ss, summary);
 
-        MediaItem::trim(id);
-        MediaItem::trim(title);
-        MediaItem::trim(yearStr);
-        MediaItem::trim(summary);
+    MediaItem::trim(id);
+    MediaItem::trim(title);
+    MediaItem::trim(yearStr);
+    MediaItem::trim(summary);
 
-        return new TvShow(id, title, summary, (unsigned short)stoi(yearStr));
-    }
+    return new TvShow(id, title, summary, (unsigned short)stoi(yearStr));
+}
 
-    void TvShow::display(ostream& out) const {
-        if (g_settings.m_tableView) {
-            out << "S | ";
-            out << left << setfill('.');
-            out << setw(50) << getTitle() << " | ";
-            out << right << setfill(' ');
-            out << setw(2) << m_episodes.size() << " | ";
-            out << setw(4) << getYear() << " | ";
-            out << left;
+void TvShow::display(ostream& out) const {
+    if (g_settings.m_tableView) {
+        out << "S | ";
+        out << left << setfill('.');
+        out << setw(50) << getTitle() << " | ";
+        out << right << setfill(' ');
+        out << setw(2) << m_episodes.size() << " | ";
+        out << setw(4) << getYear() << " | ";
+        out << left;
 
-            if (g_settings.m_maxSummaryWidth > -1) {
-                if ((short)getSummary().size() <= g_settings.m_maxSummaryWidth)
-                    out << getSummary();
-                else
-                    out << getSummary().substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
-            }
-            else
+        if (g_settings.m_maxSummaryWidth > -1) {
+            if ((short)getSummary().size() <= g_settings.m_maxSummaryWidth)
                 out << getSummary();
-
-            out << endl;
+            else
+                out << getSummary().substr(0, g_settings.m_maxSummaryWidth - 3) << "...";
         }
-        else {
-            size_t pos = 0;
+        else
+            out << getSummary();
 
-            out << getTitle() << " [" << getYear() << "]\n";
-            out << setw(getTitle().size() + 7) << setfill('-') << "" << '\n';
-
-            // Show summary
-            while (pos < getSummary().size()) {
-                out << "    " << getSummary().substr(pos, g_settings.m_maxSummaryWidth) << '\n';
-                pos += g_settings.m_maxSummaryWidth;
-            }
-
-            // 🔥 FINAL CORRECT EPISODE PRINTING
-            for (size_t i = 0; i < m_episodes.size(); i++) {
-
-                // Episode line
-                out << "    S"
-                    << right
-                    << setw(2) << setfill('0') << m_episodes[i].m_season
-                    << "E"
-                    << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason
-                    << setfill(' ')
-                    << left
-                    << " " << m_episodes[i].m_title << '\n';
-
-                // Episode summary (WRAPPED)
-                size_t pos2 = 0;
-                while (pos2 < m_episodes[i].m_summary.size()) {
-                    out << "            "   // 12 spaces indent
-                        << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth - 12)
-                        << '\n';
-                    pos2 += g_settings.m_maxSummaryWidth - 12;
-                }
-            }
-
-            out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
-        }
+        out << endl;
     }
+    else {
+        size_t pos = 0;
 
-    double TvShow::getEpisodeAverageLength() const {
-        if (m_episodes.empty()) return 0;
+        out << getTitle() << " [" << getYear() << "]\n";
+        out << setw(getTitle().size() + 7) << setfill('-') << "" << '\n';
 
-        double total = 0;
-        for (size_t i = 0; i < m_episodes.size(); i++) {
-            total += m_episodes[i].m_length;
+        while (pos < getSummary().size()) {
+            out << "    " << getSummary().substr(pos, g_settings.m_maxSummaryWidth) << '\n';
+            pos += g_settings.m_maxSummaryWidth;
         }
-
-        return total / m_episodes.size();
-    }
-
-    std::list<std::string> TvShow::getLongEpisodes() const {
-        std::list<std::string> result;
 
         for (size_t i = 0; i < m_episodes.size(); i++) {
-            if (m_episodes[i].m_length >= 3600) {
-                result.push_back(m_episodes[i].m_title);
+
+            out << "    S"
+                << right
+                << setw(2) << setfill('0') << m_episodes[i].m_season
+                << "E"
+                << setw(2) << setfill('0') << m_episodes[i].m_numberInSeason
+                << setfill(' ')
+                << left
+                << " " << m_episodes[i].m_title << '\n';
+
+            size_t pos2 = 0;
+            while (pos2 < m_episodes[i].m_summary.size()) {
+                out << "            "
+                    << m_episodes[i].m_summary.substr(pos2, g_settings.m_maxSummaryWidth)
+                    << '\n';
+                pos2 += g_settings.m_maxSummaryWidth;
             }
         }
 
-        return result;
+        out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
     }
+}
+
+double TvShow::getEpisodeAverageLength() const {
+    if (m_episodes.empty()) return 0;
+
+    double total = 0;
+    for (size_t i = 0; i < m_episodes.size(); i++) {
+        total += m_episodes[i].m_length;
+    }
+
+    return total / m_episodes.size();
+}
+
+std::list<std::string> TvShow::getLongEpisodes() const {
+    std::list<std::string> result;
+
+    for (size_t i = 0; i < m_episodes.size(); i++) {
+        if (m_episodes[i].m_length >= 3600) {
+            result.push_back(m_episodes[i].m_title);
+        }
+    }
+
+    return result;
+}
+```
+
 }
