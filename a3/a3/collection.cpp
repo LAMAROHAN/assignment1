@@ -119,30 +119,18 @@ void Collection::sort(const string& field) {
 
     if (field == "title") {
 
-        for (size_t i = 0; i < m_items.size(); i++) {
-            for (size_t j = i + 1; j < m_items.size(); j++) {
-
-                if (m_items[j]->getTitle() < m_items[i]->getTitle()) {
-                    MediaItem* temp = m_items[i];
-                    m_items[i] = m_items[j];
-                    m_items[j] = temp;
-                }
-            }
-        }
+        std::sort(m_items.begin(), m_items.end(),
+            [](MediaItem* a, MediaItem* b) {
+                return a->getTitle() < b->getTitle();
+            });
 
     }
     else if (field == "year") {
 
-        for (size_t i = 0; i < m_items.size(); i++) {
-            for (size_t j = i + 1; j < m_items.size(); j++) {
-
-                if (m_items[j]->getYear() < m_items[i]->getYear()) {
-                    MediaItem* temp = m_items[i];
-                    m_items[i] = m_items[j];
-                    m_items[j] = temp;
-                }
-            }
-        }
+        std::sort(m_items.begin(), m_items.end(),
+            [](MediaItem* a, MediaItem* b) {
+                return a->getYear() < b->getYear();
+            });
 
     }
 }
