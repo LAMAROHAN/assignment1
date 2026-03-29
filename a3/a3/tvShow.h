@@ -39,39 +39,41 @@ namespace seneca {
         void display(std::ostream& out = std::cout) const override;
 
         template<typename Collection_t>
-        static inline void addEpisode(Collection_t& col, const std::string& str)
+        static void addEpisode(Collection_t& col, const std::string& str)
         {
             if (str.empty() || str[0] == '#')
                 throw "Not a valid episode.";
 
             std::stringstream ss(str);
-            std::string showID, numOverall, season, numInSeason, airDate, length, title, summary;
 
-            std::getline(ss, showID, ',');
-            std::getline(ss, numOverall, ',');
-            std::getline(ss, season, ',');
-            std::getline(ss, numInSeason, ',');
-            std::getline(ss, airDate, ',');
-            std::getline(ss, length, ',');
-            std::getline(ss, title, ',');
-            std::getline(ss, summary);
+            std::string showID, overall, season, inSeason, airDate, length, title, summary;
+
+            getline(ss, showID, ',');
+            getline(ss, overall, ',');
+            getline(ss, season, ',');
+            getline(ss, inSeason, ',');
+            getline(ss, airDate, ',');
+            getline(ss, length, ',');
+            getline(ss, title, ',');
+            getline(ss, summary);
 
             MediaItem::trim(showID);
-            MediaItem::trim(numOverall);
+            MediaItem::trim(overall);
             MediaItem::trim(season);
-            MediaItem::trim(numInSeason);
+            MediaItem::trim(inSeason);
             MediaItem::trim(airDate);
             MediaItem::trim(length);
             MediaItem::trim(title);
             MediaItem::trim(summary);
 
-            if (showID.empty() || numOverall.empty() || numInSeason.empty() || length.empty())
+            if (showID.empty() || overall.empty() || inSeason.empty() || length.empty())
                 throw "Not a valid episode.";
 
             TvEpisode ep{};
-            ep.m_numberOverall = std::stoi(numOverall);
-            ep.m_season = season.empty() ? 1 : std::stoi(season);
-            ep.m_numberInSeason = std::stoi(numInSeason);
+
+            ep.m_numberOverall = (unsigned short)std::stoi(overall);
+            ep.m_season = season.empty() ? 1 : (unsigned short)std::stoi(season);
+            ep.m_numberInSeason = (unsigned short)std::stoi(inSeason);
             ep.m_airDate = airDate;
             ep.m_length = std::stoi(length);
             ep.m_title = title;
@@ -79,7 +81,7 @@ namespace seneca {
 
             for (size_t i = 0; i < col.size(); i++) {
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
-                if (show && show->m_id == showID) {
+                if (show != nullptr && show->m_id == showID) {
                     ep.m_show = show;
                     show->m_episodes.push_back(ep);
                     break;
