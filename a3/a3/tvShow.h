@@ -66,7 +66,7 @@ namespace seneca {
             MediaItem::trim(summary);
 
             if (showID.empty() || numOverall.empty() || numInSeason.empty() || length.empty())
-                throw "Not a valid episode.";
+                return;
 
             TvEpisode ep{};
             ep.m_numberOverall = std::stoi(numOverall);
