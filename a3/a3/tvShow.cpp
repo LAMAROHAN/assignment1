@@ -71,10 +71,8 @@ namespace seneca {
             MediaItem::trim(title);
             MediaItem::trim(summary);
 
-            if (!showID.empty() && showID.front() == '"')
-                showID.erase(0, 1);
-            if (!showID.empty() && showID.back() == '"')
-                showID.pop_back();
+            if (!showID.empty() && showID.front() == '"') showID.erase(0,1);
+            if (!showID.empty() && showID.back() == '"') showID.pop_back();
 
             if (showID.empty() || overall.empty() || number.empty() || length.empty())
                 throw "Not a valid episode.";
@@ -94,10 +92,19 @@ namespace seneca {
 
                 TvShow* show = dynamic_cast<TvShow*>(col[i]);
 
-                if (show != nullptr && show->m_id == showID) {
-                    show->m_episodes.push_back(ep);
-                    added = true;
-                    break;
+                if (show != nullptr) {
+
+                    string id1 = show->m_id;
+                    string id2 = showID;
+
+                    MediaItem::trim(id1);
+                    MediaItem::trim(id2);
+
+                    if (id1 == id2) {
+                        show->m_episodes.push_back(ep);
+                        added = true;
+                        break;
+                    }
                 }
             }
 
@@ -184,15 +191,6 @@ namespace seneca {
                 out << m_episodes[i].m_numberInSeason;
 
                 out << " " << m_episodes[i].m_title << '\n';
-
-                size_t p = 0;
-
-                while (p < m_episodes[i].m_summary.size()) {
-                    out << "            "
-                        << m_episodes[i].m_summary.substr(p, g_settings.m_maxSummaryWidth - 8)
-                        << '\n';
-                    p += g_settings.m_maxSummaryWidth - 8;
-                }
             }
 
             out << setw(getTitle().size() + 7) << setfill('-') << "" << setfill(' ') << '\n';
